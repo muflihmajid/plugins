@@ -208,16 +208,24 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
         return wrapper.transactionState ==
             SKPaymentTransactionStateWrapper.restored;
       }).map((SKPaymentTransactionWrapper wrapper) => wrapper));
+      return;
     }
 
     String receiptData = await getReceiptData();
     purchaseUpdatedController
-        .add(transactions.where((SKPaymentTransactionWrapper wrapper) {
-      return wrapper.transactionState !=
-          SKPaymentTransactionStateWrapper.restored;
-    }).map((SKPaymentTransactionWrapper transaction) {
+        .add(transactions.map((SKPaymentTransactionWrapper transaction) {
       PurchaseDetails purchaseDetails =
-          PurchaseDetails.fromSKTransaction(transaction, receiptData);
+          PurchaseDetails.fromSKTransaction(transaction, receiptData)
+            ..status = SKTransactionStatusConverter()
+                .toPurchaseStatus(transaction.transactionState)
+            ..error = transaction.error != null
+                ? IAPError(
+                    source: IAPSource.AppStore,
+                    code: kPurchaseErrorCode,
+                    message: transaction.error.domain,
+                    details: transaction.error.userInfo,
+                  )
+                : null;
       return purchaseDetails;
     }).toList());
   }

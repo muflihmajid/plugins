@@ -5,16 +5,13 @@
 package io.flutter.plugins.sensorsexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
-import io.flutter.plugins.sensors.SensorsPlugin;
+import io.flutter.app.FlutterActivity;
+import io.flutter.plugins.GeneratedPluginRegistrant;
 
-@SuppressWarnings("deprecation")
-public class EmbeddingV1Activity extends io.flutter.app.FlutterActivity {
+public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
-    SensorsPlugin.registerWith(registrarFor("io.flutter.plugins.sensors.SensorsPlugin"));
+    GeneratedPluginRegistrant.registerWith(this);
   }
 }

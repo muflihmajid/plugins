@@ -90,15 +90,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchUniversalLinkIos(String url) async {
-    if (await canLaunch(url)) {
+    if (await canLaunch('https://youtube.com')) {
       final bool nativeAppLaunchSucceeded = await launch(
-        url,
+        'https://youtube.com',
         forceSafariVC: false,
         universalLinksOnly: true,
       );
       if (!nativeAppLaunchSucceeded) {
         await launch(
-          url,
+          'https://youtube.com',
           forceSafariVC: true,
         );
       }

@@ -5,13 +5,10 @@
 
 #import "FLTLocalAuthPlugin.h"
 
-@interface FLTLocalAuthPlugin ()
-@property(copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
-@property(nullable) FlutterResult lastResult;
-@end
-
-@implementation FLTLocalAuthPlugin
-
+@implementation FLTLocalAuthPlugin {
+  NSDictionary *lastCallArgs;
+  FlutterResult lastResult;
+}
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
@@ -94,8 +91,8 @@
                  withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
-  self.lastCallArgs = nil;
-  self.lastResult = nil;
+  lastCallArgs = nil;
+  lastResult = nil;
   context.localizedFallbackTitle = @"";
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -117,8 +114,8 @@
                               return;
                             case LAErrorSystemCancel:
                               if ([arguments[@"stickyAuth"] boolValue]) {
-                                self.lastCallArgs = arguments;
-                                self.lastResult = result;
+                                lastCallArgs = arguments;
+                                lastResult = result;
                                 return;
                               }
                           }
@@ -161,8 +158,8 @@
 #pragma mark - AppDelegate
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (self.lastCallArgs != nil && self.lastResult != nil) {
-    [self authenticateWithBiometrics:_lastCallArgs withFlutterResult:self.lastResult];
+  if (lastCallArgs != nil && lastResult != nil) {
+    [self authenticateWithBiometrics:lastCallArgs withFlutterResult:lastResult];
   }
 }
 

@@ -5,20 +5,13 @@
 package io.flutter.plugins.inapppurchaseexample;
 
 import android.os.Bundle;
-import dev.flutter.plugins.integration_test.IntegrationTestPlugin;
-import io.flutter.plugins.inapppurchase.InAppPurchasePlugin;
-import io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin;
+import io.flutter.app.FlutterActivity;
+import io.flutter.plugins.GeneratedPluginRegistrant;
 
-@SuppressWarnings("deprecation")
-public class EmbeddingV1Activity extends io.flutter.app.FlutterActivity {
+public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    IntegrationTestPlugin.registerWith(
-        registrarFor("dev.flutter.plugins.integration_test.IntegrationTestPlugin"));
-    SharedPreferencesPlugin.registerWith(
-        registrarFor("io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin"));
-    InAppPurchasePlugin.registerWith(
-        registrarFor("io.flutter.plugins.inapppurchase.InAppPurchasePlugin"));
+    GeneratedPluginRegistrant.registerWith(this);
   }
 }

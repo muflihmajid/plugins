@@ -105,17 +105,16 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       // state of the authentication, i.e: if you logout elsewhere...
 
       isAuthInitialized.complete();
-    }), allowInterop((auth2.GoogleAuthInitFailureError reason) {
+    }), allowInterop((dynamic reason) {
       // onError
-      isAuthInitialized.completeError(PlatformException(
-        code: reason.error,
-        message: reason.details,
-        details:
-            'https://developers.google.com/identity/sign-in/web/reference#error_codes',
-      ));
+      throw PlatformException(
+        code: 'google_sign_in',
+        message: reason.error,
+        details: reason.details,
+      );
     }));
 
-    return _isAuthInitialized;
+    return null;
   }
 
   @override
@@ -129,16 +128,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   @override
   Future<GoogleSignInUserData> signIn() async {
     await initialized;
-    try {
-      return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
-    } on auth2.GoogleAuthSignInError catch (reason) {
-      throw PlatformException(
-        code: reason.error,
-        message: 'Exception raised from GoogleAuth.signIn()',
-        details:
-            'https://developers.google.com/identity/sign-in/web/reference#error_codes_2',
-      );
-    }
+
+    return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
   }
 
   @override
@@ -184,24 +175,5 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     await initialized;
 
     return auth2.getAuthInstance().disconnect();
-  }
-
-  @override
-  Future<bool> requestScopes(List<String> scopes) async {
-    await initialized;
-
-    final currentUser = auth2.getAuthInstance()?.currentUser?.get();
-
-    if (currentUser == null) return false;
-
-    final grantedScopes = currentUser.getGrantedScopes();
-    final missingScopes =
-        scopes.where((scope) => !grantedScopes.contains(scope));
-
-    if (missingScopes.isEmpty) return true;
-
-    return currentUser
-            .grant(auth2.SigninOptions(scope: missingScopes.join(" "))) ??
-        false;
   }
 }

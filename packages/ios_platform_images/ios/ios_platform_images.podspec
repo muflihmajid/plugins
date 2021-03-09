@@ -5,16 +5,14 @@
 Pod::Spec.new do |s|
   s.name             = 'ios_platform_images'
   s.version          = '0.0.1'
-  s.summary          = 'Flutter iOS Platform Images'
+  s.summary          = 'A new flutter plugin project.'
   s.description      = <<-DESC
-A Flutter plugin to share images between Flutter and iOS.
-Downloaded by pub (not CocoaPods).
+A new flutter plugin project.
                        DESC
-  s.homepage         = 'https://github.com/flutter/plugins'
-  s.license          = { :type => 'BSD', :file => '../LICENSE' }
-  s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/ios_platform_images' }
-  s.documentation_url = 'https://pub.dev/packages/ios_platform_images'
+  s.homepage         = 'http://example.com'
+  s.license          = { :file => '../LICENSE' }
+  s.author           = { 'Your Company' => 'email@example.com' }
+  s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '8.0'

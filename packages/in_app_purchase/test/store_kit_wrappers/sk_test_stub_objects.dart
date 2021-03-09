@@ -22,7 +22,6 @@ final SKPaymentTransactionWrapper dummyOriginalTransaction =
   transactionIdentifier: '123123',
   error: dummyError,
 );
-
 final SKPaymentTransactionWrapper dummyTransaction =
     SKPaymentTransactionWrapper(
   transactionState: SKPaymentTransactionStateWrapper.purchased,

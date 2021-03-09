@@ -35,7 +35,6 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
     @required bool enableDomStorage,
     @required bool universalLinksOnly,
     @required Map<String, String> headers,
-    String webOnlyWindowName,
   }) {
     return _channel.invokeMethod<bool>(
       'launch',

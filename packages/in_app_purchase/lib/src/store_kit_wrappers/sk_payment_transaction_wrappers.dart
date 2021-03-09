@@ -185,10 +185,4 @@ class SKPaymentTransactionWrapper {
 
   @override
   String toString() => _$SKPaymentTransactionWrapperToJson(this).toString();
-
-  /// The payload that is used to finish this transaction.
-  Map<String, String> toFinishMap() => {
-        "transactionIdentifier": this.transactionIdentifier,
-        "productIdentifier": this.payment?.productIdentifier,
-      };
 }

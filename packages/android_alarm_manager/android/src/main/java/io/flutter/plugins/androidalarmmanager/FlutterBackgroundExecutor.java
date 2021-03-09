@@ -19,7 +19,9 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import io.flutter.view.FlutterCallbackInformation;
+import io.flutter.view.FlutterMain;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,10 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FlutterBackgroundExecutor implements MethodCallHandler {
   private static final String TAG = "FlutterBackgroundExecutor";
   private static final String CALLBACK_HANDLE_KEY = "callback_handle";
-
-  @SuppressWarnings("deprecation")
-  private static io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback
-      pluginRegistrantCallback;
+  private static PluginRegistrantCallback pluginRegistrantCallback;
 
   /**
    * The {@link MethodChannel} that connects the Android side of this plugin with the background
@@ -46,16 +45,14 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
   private AtomicBoolean isCallbackDispatcherReady = new AtomicBoolean(false);
 
   /**
-   * Sets the {@code io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback} used to
-   * register plugins with the newly spawned isolate.
+   * Sets the {@code PluginRegistrantCallback} used to register plugins with the newly spawned
+   * isolate.
    *
    * <p>Note: this is only necessary for applications using the V1 engine embedding API as plugins
    * are automatically registered via reflection in the V2 engine embedding API. If not set, alarm
    * callbacks will not be able to utilize functionality from other plugins.
    */
-  @SuppressWarnings("deprecation")
-  public static void setPluginRegistrant(
-      io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
+  public static void setPluginRegistrant(PluginRegistrantCallback callback) {
     pluginRegistrantCallback = callback;
   }
 
@@ -81,6 +78,7 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     String method = call.method;
+    Object arguments = call.arguments;
     try {
       if (method.equals("AlarmService.initialized")) {
         // This message is sent by the background method channel as soon as the background isolate
@@ -104,7 +102,7 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
    * <p>The isolate is configured as follows:
    *
    * <ul>
-   *   <li>Bundle Path: {@code io.flutter.view.FlutterMain.findAppBundlePath(context)}.
+   *   <li>Bundle Path: {@code FlutterMain.findAppBundlePath(context)}.
    *   <li>Entrypoint: The Dart method used the last time this plugin was initialized in the
    *       foreground.
    *   <li>Run args: none.
@@ -133,7 +131,7 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
    * <p>The isolate is configured as follows:
    *
    * <ul>
-   *   <li>Bundle Path: {@code io.flutter.view.FlutterMain.findAppBundlePath(context)}.
+   *   <li>Bundle Path: {@code FlutterMain.findAppBundlePath(context)}.
    *   <li>Entrypoint: The Dart method represented by {@code callbackHandle}.
    *   <li>Run args: none.
    * </ul>
@@ -154,10 +152,9 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
     }
 
     Log.i(TAG, "Starting AlarmService...");
-    @SuppressWarnings("deprecation")
-    String appBundlePath = io.flutter.view.FlutterMain.findAppBundlePath();
+    String appBundlePath = FlutterMain.findAppBundlePath(context);
     AssetManager assets = context.getAssets();
-    if (!isRunning()) {
+    if (appBundlePath != null && !isRunning()) {
       backgroundFlutterEngine = new FlutterEngine(context);
 
       // We need to create an instance of `FlutterEngine` before looking up the
@@ -165,6 +162,10 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
       // lookup will fail.
       FlutterCallbackInformation flutterCallback =
           FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
+      if (flutterCallback == null) {
+        Log.e(TAG, "Fatal: failed to find callback");
+        return;
+      }
 
       DartExecutor executor = backgroundFlutterEngine.getDartExecutor();
       initializeMethodChannel(executor);

@@ -5,14 +5,13 @@
 package io.flutter.plugins.androidintentexample;
 
 import android.os.Bundle;
-import io.flutter.plugins.androidintent.AndroidIntentPlugin;
+import io.flutter.app.FlutterActivity;
+import io.flutter.plugins.GeneratedPluginRegistrant;
 
-@SuppressWarnings("deprecation")
-public class EmbeddingV1Activity extends io.flutter.app.FlutterActivity {
+public class EmbeddingV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    AndroidIntentPlugin.registerWith(
-        registrarFor("io.flutter.plugins.androidintent.AndroidIntentPlugin"));
+    GeneratedPluginRegistrant.registerWith(this);
   }
 }

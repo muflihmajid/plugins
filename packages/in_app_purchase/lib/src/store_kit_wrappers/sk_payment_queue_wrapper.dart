@@ -37,12 +37,8 @@ class SKPaymentQueueWrapper {
 
   static final SKPaymentQueueWrapper _singleton = SKPaymentQueueWrapper._();
 
-  SKPaymentQueueWrapper._();
-
-  /// Calls [`-[SKPaymentQueue transactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506026-transactions?language=objc)
-  Future<List<SKPaymentTransactionWrapper>> transactions() async {
-    return _getTransactionList(
-        await channel.invokeListMethod<Map>('-[SKPaymentQueue transactions]'));
+  SKPaymentQueueWrapper._() {
+    callbackChannel.setMethodCallHandler(_handleObserverCallbacks);
   }
 
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
@@ -57,7 +53,6 @@ class SKPaymentQueueWrapper {
   /// addTransactionObserver:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506042-addtransactionobserver?language=objc).
   void setTransactionObserver(SKTransactionObserverWrapper observer) {
     _observer = observer;
-    callbackChannel.setMethodCallHandler(_handleObserverCallbacks);
   }
 
   /// Posts a payment to the queue.
@@ -103,11 +98,9 @@ class SKPaymentQueueWrapper {
   /// finishTransaction:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction?language=objc).
   Future<void> finishTransaction(
       SKPaymentTransactionWrapper transaction) async {
-    Map<String, String> requestMap = transaction.toFinishMap();
     await channel.invokeMethod<void>(
-      '-[InAppPurchasePlugin finishTransaction:result:]',
-      requestMap,
-    );
+        '-[InAppPurchasePlugin finishTransaction:result:]',
+        transaction.transactionIdentifier);
   }
 
   /// Restore previously purchased transactions.

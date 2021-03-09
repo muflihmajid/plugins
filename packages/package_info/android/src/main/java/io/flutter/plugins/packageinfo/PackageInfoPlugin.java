@@ -14,6 +14,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,15 +24,15 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
   private MethodChannel methodChannel;
 
   /** Plugin registration. */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+  public static void registerWith(Registrar registrar) {
     final PackageInfoPlugin instance = new PackageInfoPlugin();
     instance.onAttachedToEngine(registrar.context(), registrar.messenger());
   }
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
+    onAttachedToEngine(
+        binding.getApplicationContext(), binding.getFlutterEngine().getDartExecutor());
   }
 
   private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {

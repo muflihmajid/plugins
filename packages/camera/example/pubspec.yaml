@@ -8,15 +8,13 @@ dependencies:
   flutter:
     sdk: flutter
   video_player: ^0.10.0
-  integration_test:
-    path: ../../integration_test
+  e2e: "^0.2.0"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  pedantic: ^1.8.0
 
 flutter:
   uses-material-design: true

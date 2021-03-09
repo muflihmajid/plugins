@@ -15,6 +15,8 @@
 @property(nullable, copy, nonatomic) ShouldAddStorePayment shouldAddStorePayment;
 @property(nullable, copy, nonatomic) UpdatedDownloads updatedDownloads;
 
+@property(strong, nonatomic) NSMutableDictionary *transactionsSetter;
+
 @end
 
 @implementation FIAPaymentQueueHandler
@@ -29,29 +31,21 @@
                         updatedDownloads:(nullable UpdatedDownloads)updatedDownloads {
   self = [super init];
   if (self) {
-    _queue = queue;
-    _transactionsUpdated = transactionsUpdated;
-    _transactionsRemoved = transactionsRemoved;
-    _restoreTransactionFailed = restoreTransactionFailed;
-    _paymentQueueRestoreCompletedTransactionsFinished = restoreCompletedTransactionsFinished;
-    _shouldAddStorePayment = shouldAddStorePayment;
-    _updatedDownloads = updatedDownloads;
+    self.queue = queue;
+    self.transactionsUpdated = transactionsUpdated;
+    self.transactionsRemoved = transactionsRemoved;
+    self.restoreTransactionFailed = restoreTransactionFailed;
+    self.paymentQueueRestoreCompletedTransactionsFinished = restoreCompletedTransactionsFinished;
+    self.shouldAddStorePayment = shouldAddStorePayment;
+    self.updatedDownloads = updatedDownloads;
+    self.transactionsSetter = [NSMutableDictionary new];
+    [queue addTransactionObserver:self];
   }
   return self;
 }
 
-- (void)startObservingPaymentQueue {
-  [_queue addTransactionObserver:self];
-}
-
-- (BOOL)addPayment:(SKPayment *)payment {
-  for (SKPaymentTransaction *transaction in self.queue.transactions) {
-    if ([transaction.payment.productIdentifier isEqualToString:payment.productIdentifier]) {
-      return NO;
-    }
-  }
+- (void)addPayment:(SKPayment *)payment {
   [self.queue addPayment:payment];
-  return YES;
 }
 
 - (void)finishTransaction:(SKPaymentTransaction *)transaction {
@@ -67,11 +61,15 @@
 }
 
 #pragma mark - observing
-
 // Sent when the transaction array has changed (additions or state changes).  Client should check
 // state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
+  for (SKPaymentTransaction *transaction in transactions) {
+    if (transaction.transactionIdentifier) {
+      [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
+    }
+  }
   // notify dart through callbacks.
   self.transactionsUpdated(transactions);
 }
@@ -107,8 +105,10 @@
   return (self.shouldAddStorePayment(payment, product));
 }
 
-- (NSArray<SKPaymentTransaction *> *)getUnfinishedTransactions {
-  return self.queue.transactions;
+#pragma mark - getter
+
+- (NSDictionary *)transactions {
+  return self.transactionsSetter;
 }
 
 @end

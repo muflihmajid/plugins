@@ -6,13 +6,12 @@ package io.flutter.plugins.packageinfoexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugins.packageinfo.PackageInfoPlugin;
+import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class EmbedderV1Activity extends FlutterActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    PackageInfoPlugin.registerWith(
-        registrarFor("io.flutter.plugins.packageinfo.PackageInfoPlugin"));
+    GeneratedPluginRegistrant.registerWith(this);
   }
 }

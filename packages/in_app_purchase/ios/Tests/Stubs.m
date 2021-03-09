@@ -65,14 +65,6 @@
   return self;
 }
 
-- (instancetype)initWithProductID:(NSString *)productIdentifier {
-  self = [super init];
-  if (self) {
-    [self setValue:productIdentifier forKey:@"productIdentifier"];
-  }
-  return self;
-}
-
 @end
 
 @interface SKProductRequestStub ()
@@ -140,7 +132,7 @@
 }
 
 - (SKProduct *)getProduct:(NSString *)productID {
-  return [[SKProductStub alloc] initWithProductID:productID];
+  return [SKProduct new];
 }
 
 - (SKReceiptRefreshRequestStub *)getRefreshReceiptRequest:(NSDictionary *)properties {
@@ -163,28 +155,17 @@
 
 - (void)addPayment:(SKPayment *)payment {
   SKPaymentTransactionStub *transaction =
-      [[SKPaymentTransactionStub alloc] initWithState:self.testState payment:payment];
+      [[SKPaymentTransactionStub alloc] initWithState:self.testState];
   [self.observer paymentQueue:self updatedTransactions:@[ transaction ]];
 }
 
 - (void)restoreCompletedTransactions {
-  if ([self.observer
-          respondsToSelector:@selector(paymentQueueRestoreCompletedTransactionsFinished:)]) {
-    [self.observer paymentQueueRestoreCompletedTransactionsFinished:self];
-  }
-}
-
-- (void)finishTransaction:(SKPaymentTransaction *)transaction {
-  if ([self.observer respondsToSelector:@selector(paymentQueue:removedTransactions:)]) {
-    [self.observer paymentQueue:self removedTransactions:@[ transaction ]];
-  }
+  [self.observer paymentQueueRestoreCompletedTransactionsFinished:self];
 }
 
 @end
 
-@implementation SKPaymentTransactionStub {
-  SKPayment *_payment;
-}
+@implementation SKPaymentTransactionStub
 
 - (instancetype)initWithID:(NSString *)identifier {
   self = [super init];
@@ -199,8 +180,8 @@
   if (self) {
     [self setValue:map[@"transactionIdentifier"] forKey:@"transactionIdentifier"];
     [self setValue:map[@"transactionState"] forKey:@"transactionState"];
-    if (![map[@"originalTransaction"] isKindOfClass:[NSNull class]] &&
-        map[@"originalTransaction"]) {
+    if (map[@"originalTransaction"] && !
+                                       [map[@"originalTransaction"] isKindOfClass:[NSNull class]]) {
       [self setValue:[[SKPaymentTransactionStub alloc] initWithMap:map[@"originalTransaction"]]
               forKey:@"originalTransaction"];
     }
@@ -215,32 +196,10 @@
 - (instancetype)initWithState:(SKPaymentTransactionState)state {
   self = [super init];
   if (self) {
-    // Only purchased and restored transactions have transactionIdentifier:
-    // https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier?language=objc
-    if (state == SKPaymentTransactionStatePurchased || state == SKPaymentTransactionStateRestored) {
-      [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
-    }
+    [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
     [self setValue:@(state) forKey:@"transactionState"];
   }
   return self;
-}
-
-- (instancetype)initWithState:(SKPaymentTransactionState)state payment:(SKPayment *)payment {
-  self = [super init];
-  if (self) {
-    // Only purchased and restored transactions have transactionIdentifier:
-    // https://developer.apple.com/documentation/storekit/skpaymenttransaction/1411288-transactionidentifier?language=objc
-    if (state == SKPaymentTransactionStatePurchased || state == SKPaymentTransactionStateRestored) {
-      [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
-    }
-    [self setValue:@(state) forKey:@"transactionState"];
-    _payment = payment;
-  }
-  return self;
-}
-
-- (SKPayment *)payment {
-  return _payment;
 }
 
 @end

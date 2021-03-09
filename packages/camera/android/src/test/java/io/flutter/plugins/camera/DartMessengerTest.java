@@ -95,7 +95,6 @@ public class DartMessengerTest {
 
   private Map<String, String> decodeSentMessage(ByteBuffer sentMessage) {
     sentMessage.position(0);
-    //noinspection unchecked
     return (Map<String, String>) StandardMethodCodec.INSTANCE.decodeEnvelope(sentMessage);
   }
 

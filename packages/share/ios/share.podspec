@@ -3,17 +3,15 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'share'
-  s.version          = '0.0.1'
-  s.summary          = 'Flutter Share'
+  s.version          = '0.5.2'
+  s.summary          = 'A Flutter plugin for sharing content from the Flutter app via the platform share sheet.'
   s.description      = <<-DESC
-A Flutter plugin to share content from your Flutter app via the platform's share dialog.
-Downloaded by pub (not CocoaPods).
+A Flutter plugin for sharing content from the Flutter app via the platform share sheet.
                        DESC
-  s.homepage         = 'https://github.com/flutter/plugins'
-  s.license          = { :type => 'BSD', :file => '../LICENSE' }
-  s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/share' }
-  s.documentation_url = 'https://pub.dev/packages/share'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/share'
+  s.license          = { :file => '../LICENSE' }
+  s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
+  s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
