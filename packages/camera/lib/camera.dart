@@ -259,13 +259,11 @@ class CameraController extends ValueNotifier<CameraValue> {
   StreamSubscription<dynamic> _imageStreamSubscription;
   Completer<void> _creatingCompleter;
 
-  /// Initializes the camera of flash on the device.
-  ///
-  /// open flash.
+
   Future<bool> flash(bool value) async {
     try {
       final Map<String, dynamic> reply =
-          await _channel.invokeMapMethod<String, dynamic>(
+      await _channel.invokeMapMethod<String, dynamic>(
         'enableFlash',
         <String, dynamic>{
           'flash': value,
@@ -276,6 +274,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw CameraException(e.code, e.message);
     }
   }
+
 
   /// Initializes the camera on the device.
   ///
